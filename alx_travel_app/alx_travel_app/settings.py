@@ -24,16 +24,6 @@ environ.Env.read_env()
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
-#CHAPA_SECRET_KEY = os.environ.get("CHAPA_SECRET_KEY")
-
-# #tell django i have some secrete keys in .env file
-# CHAPA_SECRET_KEY = os.getenv('CHAPA_SECRET_KEY')
-# CHAPA_BASE_URL = os.getenv('CHAPA_BASE_URL', 'https://api.chapa.co/v1/transaction')
-
-# #Set up chapa API secrete key
-# CHAPA_SECRET_KEY= CHASECK_TEST-IrCHfss1XRE9S1UZXBzu44hGlgvt8TcB
-# CHAPA_BASE_URL=https://api.chapa.co/v1/transaction
-
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -58,10 +48,13 @@ ALLOWED_HOSTS = []
 # ==============================
 # CHAPA PAYMENT SETTINGS
 # ==============================
-CHAPA_SECRET_KEY = env("CHAPA_SECRET_KEY")
-CHAPA_BASE_URL = "https://api.chapa.co/v1/transaction"
-#CHAPA_INITIALIZE_URL = f"{CHAPA_API_BASE_URL}/initialize"
-#CHAPA_VERIFY_URL = f"{CHAPA_API_BASE_URL}/verify"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # ✅ Make sure this is at the top
+
+CHAPA_SECRET_KEY = os.getenv("CHAPA_SECRET_KEY")
+print("CHAPA SECRET KEY:", CHAPA_SECRET_KEY) 
 
 # Application definition
 
@@ -76,6 +69,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -156,7 +150,16 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-    )
+    ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # Optional, for browsable API
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 # Internationalization
